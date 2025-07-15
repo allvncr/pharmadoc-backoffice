@@ -24,7 +24,6 @@
         <label>Role</label>
         <select v-model="form.role" required>
           <option value="superAdmin">Administrateur</option>
-          <option value="proprio">Proprio</option>
           <option value="client">Client</option>
         </select>
 
