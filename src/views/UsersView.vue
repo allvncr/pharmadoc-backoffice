@@ -175,6 +175,10 @@ onMounted(() => {
         padding: 12px;
         font-size: 14px;
         text-align: left;
+
+        &:nth-child(1) {
+          width: 64px;
+        }
       }
 
       thead {
