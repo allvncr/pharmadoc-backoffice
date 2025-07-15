@@ -15,10 +15,10 @@
       <table>
         <thead>
           <tr>
+            <th>ID</th>
             <th>Prénom</th>
             <th>Nom</th>
             <th>Email</th>
-            <th>Télephone</th>
             <th>Role</th>
           </tr>
         </thead>
@@ -38,11 +38,15 @@
             :key="index"
             @click="openEntreprise(user.id)"
           >
-            <td>{{ user.firstname }}</td>
-            <td>{{ user.lastname }}</td>
+            <td>{{ user.id }}</td>
+            <td>{{ user.firstName }}</td>
+            <td>{{ user.lastName }}</td>
             <td>{{ user.email }}</td>
-            <td>{{ user.tel }}</td>
-            <td>{{ user.role }}</td>
+            <td>
+              <div v-for="role in user.roles" :key="role.id">
+                {{ role.name }}
+              </div>
+            </td>
           </tr>
         </tbody>
       </table>
