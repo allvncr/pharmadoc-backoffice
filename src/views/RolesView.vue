@@ -3,12 +3,10 @@
     <!-- Header -->
     <div class="header">
       <div>
-        <h2>Categories</h2>
-        <p class="breadcrumb">Tableau de bord > <span>Categories</span></p>
+        <h2>Roles</h2>
+        <p class="breadcrumb">Tableau de bord > <span>Roles</span></p>
       </div>
-      <button class="add-btn" @click="showModal = true">
-        Ajouter une categorie
-      </button>
+      <button class="add-btn" @click="showModal = true">Ajouter un role</button>
     </div>
     <!-- Table -->
     <div class="table-container">
@@ -21,17 +19,17 @@
         </thead>
         <tbody>
           <!-- Chargement en cours -->
-          <tr v-if="categorieStore.loading">
+          <tr v-if="roleStore.loading">
             <td colspan="7" class="loading-row">
               <div class="spinner"></div>
-              Chargement des categories...
+              Chargement des roles...
             </td>
           </tr>
 
           <!-- Données chargées -->
           <tr
             v-else
-            v-for="(item, index) in categorieStore.categories"
+            v-for="(item, index) in roleStore.roles"
             :key="index"
             @click="openEntreprise(item.id)"
           >
@@ -43,9 +41,7 @@
 
       <!-- Pagination -->
       <div class="pagination">
-        <div class="range">
-          {{ categorieStore.categories.length }} Categories
-        </div>
+        <div class="range">{{ roleStore.roles.length }} Roles</div>
       </div>
     </div>
 
@@ -56,16 +52,17 @@
     />
   </div>
 </template>
+item
 
 <script setup>
 import AddUserModal from "@/components/AddUserModal.vue";
 import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
-import { useCategorieStore } from "@/stores/categorieStore";
+import { useRoleStore } from "@/stores/roleStore";
 
 const router = useRouter();
 const showModal = ref(false);
-const categorieStore = useCategorieStore();
+const roleStore = useRoleStore();
 
 const handleSubmit = (data) => {
   // Envoi vers l’API ou ajout au tableau
@@ -80,18 +77,16 @@ const selected = ref([]);
 const selectAll = ref(false);
 
 const toggleAll = () => {
-  selected.value = selectAll.value
-    ? categorieStore.categories.map((r) => r.id)
-    : [];
+  selected.value = selectAll.value ? roleStore.roles.map((r) => r.id) : [];
 };
 
 watch(selected, (val) => {
-  selectAll.value = val.length === categorieStore.categories.length;
+  selectAll.value = val.length === roleStore.roles.length;
 });
 
 onMounted(() => {
   // Logique pour charger les entreprises depuis l'API
-  categorieStore.getAllCategories();
+  roleStore.getAllRoles();
 });
 </script>
 
@@ -169,6 +164,7 @@ onMounted(() => {
         padding: 12px;
         font-size: 14px;
         text-align: left;
+
         // &:nth-child(1) {
         //   width: 64px;
         // }

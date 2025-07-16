@@ -11,11 +11,14 @@
       <RouterLink to="/admin/users" active-class="active">
         Utilisateurs
       </RouterLink>
-      <RouterLink to="/admin/medecines" active-class="active"
-        >Medecines</RouterLink
-      >
+      <RouterLink to="/admin/medecines" active-class="active">
+        Medecines
+      </RouterLink>
       <RouterLink to="/admin/categories" active-class="active">
         Categories
+      </RouterLink>
+      <RouterLink to="/admin/subCategories" active-class="active">
+        Sous-Categories
       </RouterLink>
       <RouterLink to="/admin/roles" active-class="active"> Roles </RouterLink>
       <RouterLink to="/admin/orders" active-class="active"> Orders </RouterLink>

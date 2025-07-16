@@ -3,11 +3,11 @@
     <!-- Header -->
     <div class="header">
       <div>
-        <h2>Categories</h2>
-        <p class="breadcrumb">Tableau de bord > <span>Categories</span></p>
+        <h2>Sous Categories</h2>
+        <p class="breadcrumb">Tableau de bord > <span>Sous Categories</span></p>
       </div>
       <button class="add-btn" @click="showModal = true">
-        Ajouter une categorie
+        Ajouter une sous categorie
       </button>
     </div>
     <!-- Table -->
@@ -17,26 +17,28 @@
           <tr>
             <th>ID</th>
             <th>Nom</th>
+            <th>Categorie</th>
           </tr>
         </thead>
         <tbody>
           <!-- Chargement en cours -->
-          <tr v-if="categorieStore.loading">
+          <tr v-if="subCategorieStore.loading">
             <td colspan="7" class="loading-row">
               <div class="spinner"></div>
-              Chargement des categories...
+              Chargement des subCategories...
             </td>
           </tr>
 
           <!-- Données chargées -->
           <tr
             v-else
-            v-for="(item, index) in categorieStore.categories"
+            v-for="(item, index) in subCategorieStore.subCategories"
             :key="index"
             @click="openEntreprise(item.id)"
           >
             <td>{{ item.id }}</td>
             <td>{{ item.name }}</td>
+            <td>{{ item.categoryDTO.name }}</td>
           </tr>
         </tbody>
       </table>
@@ -44,7 +46,7 @@
       <!-- Pagination -->
       <div class="pagination">
         <div class="range">
-          {{ categorieStore.categories.length }} Categories
+          {{ subCategorieStore.subCategories.length }} sous categories
         </div>
       </div>
     </div>
@@ -61,11 +63,11 @@
 import AddUserModal from "@/components/AddUserModal.vue";
 import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
-import { useCategorieStore } from "@/stores/categorieStore";
+import { useSubCategorieStore } from "@/stores/subCategorieStore";
 
 const router = useRouter();
 const showModal = ref(false);
-const categorieStore = useCategorieStore();
+const subCategorieStore = useSubCategorieStore();
 
 const handleSubmit = (data) => {
   // Envoi vers l’API ou ajout au tableau
@@ -81,17 +83,17 @@ const selectAll = ref(false);
 
 const toggleAll = () => {
   selected.value = selectAll.value
-    ? categorieStore.categories.map((r) => r.id)
+    ? subCategorieStore.subCategories.map((r) => r.id)
     : [];
 };
 
 watch(selected, (val) => {
-  selectAll.value = val.length === categorieStore.categories.length;
+  selectAll.value = val.length === subCategorieStore.subCategories.length;
 });
 
 onMounted(() => {
   // Logique pour charger les entreprises depuis l'API
-  categorieStore.getAllCategories();
+  subCategorieStore.getAllSubCategories();
 });
 </script>
 
@@ -169,6 +171,7 @@ onMounted(() => {
         padding: 12px;
         font-size: 14px;
         text-align: left;
+
         // &:nth-child(1) {
         //   width: 64px;
         // }

@@ -3,11 +3,11 @@
     <!-- Header -->
     <div class="header">
       <div>
-        <h2>Categories</h2>
-        <p class="breadcrumb">Tableau de bord > <span>Categories</span></p>
+        <h2>Commandes</h2>
+        <p class="breadcrumb">Tableau de bord > <span>Commandes</span></p>
       </div>
       <button class="add-btn" @click="showModal = true">
-        Ajouter une categorie
+        Exporter une commande
       </button>
     </div>
     <!-- Table -->
@@ -15,37 +15,53 @@
       <table>
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Nom</th>
+            <th>
+              <input type="checkbox" v-model="selectAll" @change="toggleAll" />
+            </th>
+            <th>Numéro de commande</th>
+            <th>Client</th>
+            <th>Numéro Client</th>
+            <th>Nombre d'items</th>
+            <th>Prix total</th>
+            <th>Statut</th>
           </tr>
         </thead>
         <tbody>
           <!-- Chargement en cours -->
-          <tr v-if="categorieStore.loading">
+          <tr v-if="orderStore.loading">
             <td colspan="7" class="loading-row">
               <div class="spinner"></div>
-              Chargement des categories...
+              Chargement des orders...
             </td>
           </tr>
 
           <!-- Données chargées -->
           <tr
             v-else
-            v-for="(item, index) in categorieStore.categories"
+            v-for="(item, index) in orderStore.orders"
             :key="index"
             @click="openEntreprise(item.id)"
           >
-            <td>{{ item.id }}</td>
-            <td>{{ item.name }}</td>
+            <td @click.stop>
+              <input type="checkbox" v-model="selected" :value="item.id" />
+            </td>
+            <td>{{ item.orderNumber }}</td>
+            <td>{{ item.user.firstName }} {{ item.user.lastName }}</td>
+            <td>{{ item.phoneNumber }}</td>
+            <td>{{ item.orderLines.length }}</td>
+            <td>{{ item.totalAmount.toLocaleString("fr-CI") }} Fcfa</td>
+            <td>
+              <span :class="['status', item.status.toLowerCase()]">
+                {{ item.status }}
+              </span>
+            </td>
           </tr>
         </tbody>
       </table>
 
       <!-- Pagination -->
       <div class="pagination">
-        <div class="range">
-          {{ categorieStore.categories.length }} Categories
-        </div>
+        <div class="range">{{ orderStore.orders.length }} commandes</div>
       </div>
     </div>
 
@@ -61,11 +77,11 @@
 import AddUserModal from "@/components/AddUserModal.vue";
 import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
-import { useCategorieStore } from "@/stores/categorieStore";
+import { useOrderStore } from "@/stores/orderStore";
 
 const router = useRouter();
 const showModal = ref(false);
-const categorieStore = useCategorieStore();
+const orderStore = useOrderStore();
 
 const handleSubmit = (data) => {
   // Envoi vers l’API ou ajout au tableau
@@ -80,18 +96,16 @@ const selected = ref([]);
 const selectAll = ref(false);
 
 const toggleAll = () => {
-  selected.value = selectAll.value
-    ? categorieStore.categories.map((r) => r.id)
-    : [];
+  selected.value = selectAll.value ? orderStore.orders.map((r) => r.id) : [];
 };
 
 watch(selected, (val) => {
-  selectAll.value = val.length === categorieStore.categories.length;
+  selectAll.value = val.length === orderStore.orders.length;
 });
 
 onMounted(() => {
   // Logique pour charger les entreprises depuis l'API
-  categorieStore.getAllCategories();
+  orderStore.getAllOrders();
 });
 </script>
 
@@ -164,14 +178,52 @@ onMounted(() => {
       width: 100%;
       border-collapse: collapse;
 
+      input[type="checkbox"] {
+        accent-color: $orange;
+      }
+
+      .status {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: capitalize;
+      }
+
+      .paid {
+        background: #dcfce7;
+        color: #16a34a;
+      }
+
+      .en_attente,
+      .en_preparation,
+      .confirmee {
+        background: #fef3c7;
+        color: #b45309;
+      }
+
+      .livree,
+      .expediee {
+        background: #d1fae5;
+        color: #059669;
+      }
+
+      .annulee,
+      .retournee,
+      .remboursee {
+        background: #fef2f2;
+        color: #b91c1c;
+      }
+
       th,
       td {
         padding: 12px;
         font-size: 14px;
         text-align: left;
-        // &:nth-child(1) {
-        //   width: 64px;
-        // }
+
+        &:nth-child(1) {
+          width: 64px;
+        }
       }
 
       thead {

@@ -97,9 +97,13 @@ export const useAuthStore = defineStore("auth", {
 
     async getAllUsers() {
       try {
+        this.loading = true;
+        this.error = null;
         const response = await getAllUsers(this.token);
         this.users = response.data;
+        this.loading = false;
       } catch (err) {
+        this.loading = false;
         this.error =
           err.message ||
           "Échec de la récupération des utilisateurs. Essayez à nouveau.";

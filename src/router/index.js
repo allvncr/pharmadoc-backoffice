@@ -21,8 +21,24 @@ const routes = [
       },
       { path: "users", component: () => import("@/views/UsersView.vue") },
       {
+        path: "medecines",
+        component: () => import("@/views/MedecinesView.vue"),
+      },
+      {
         path: "categories",
         component: () => import("@/views/CategoriesView.vue"),
+      },
+      {
+        path: "subCategories",
+        component: () => import("@/views/SubCategoriesView.vue"),
+      },
+      {
+        path: "roles",
+        component: () => import("@/views/RolesView.vue"),
+      },
+      {
+        path: "orders",
+        component: () => import("@/views/OrdersView.vue"),
       },
     ],
   },

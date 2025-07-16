@@ -3,11 +3,11 @@
     <!-- Header -->
     <div class="header">
       <div>
-        <h2>Categories</h2>
-        <p class="breadcrumb">Tableau de bord > <span>Categories</span></p>
+        <h2>Medecines</h2>
+        <p class="breadcrumb">Tableau de bord > <span>Medecines</span></p>
       </div>
       <button class="add-btn" @click="showModal = true">
-        Ajouter une categorie
+        Ajouter une medecine
       </button>
     </div>
     <!-- Table -->
@@ -16,36 +16,42 @@
         <thead>
           <tr>
             <th>ID</th>
+            <th>Image</th>
             <th>Nom</th>
+            <th>Prix promo</th>
+            <th>Prix de base</th>
           </tr>
         </thead>
         <tbody>
           <!-- Chargement en cours -->
-          <tr v-if="categorieStore.loading">
+          <tr v-if="medecineStore.loading">
             <td colspan="7" class="loading-row">
               <div class="spinner"></div>
-              Chargement des categories...
+              Chargement des medecines...
             </td>
           </tr>
 
           <!-- Données chargées -->
           <tr
             v-else
-            v-for="(item, index) in categorieStore.categories"
+            v-for="(item, index) in medecineStore.medecines"
             :key="index"
             @click="openEntreprise(item.id)"
           >
             <td>{{ item.id }}</td>
+            <td>
+              <img :src="item.url" alt="" />
+            </td>
             <td>{{ item.name }}</td>
+            <td>{{ item.newPrice.toLocaleString("fr-CI") }} Fcfa</td>
+            <td>{{ item.oldPrice.toLocaleString("fr-CI") }} Fcfa</td>
           </tr>
         </tbody>
       </table>
 
       <!-- Pagination -->
       <div class="pagination">
-        <div class="range">
-          {{ categorieStore.categories.length }} Categories
-        </div>
+        <div class="range">{{ medecineStore.medecines.length }} Medecines</div>
       </div>
     </div>
 
@@ -61,11 +67,11 @@
 import AddUserModal from "@/components/AddUserModal.vue";
 import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
-import { useCategorieStore } from "@/stores/categorieStore";
+import { useMedecineStore } from "@/stores/medecineStore";
 
 const router = useRouter();
 const showModal = ref(false);
-const categorieStore = useCategorieStore();
+const medecineStore = useMedecineStore();
 
 const handleSubmit = (data) => {
   // Envoi vers l’API ou ajout au tableau
@@ -81,17 +87,17 @@ const selectAll = ref(false);
 
 const toggleAll = () => {
   selected.value = selectAll.value
-    ? categorieStore.categories.map((r) => r.id)
+    ? medecineStore.medecines.map((r) => r.id)
     : [];
 };
 
 watch(selected, (val) => {
-  selectAll.value = val.length === categorieStore.categories.length;
+  selectAll.value = val.length === medecineStore.medecines.length;
 });
 
 onMounted(() => {
   // Logique pour charger les entreprises depuis l'API
-  categorieStore.getAllCategories();
+  medecineStore.all_medecines({ page: 0, size: 10 });
 });
 </script>
 
@@ -169,9 +175,10 @@ onMounted(() => {
         padding: 12px;
         font-size: 14px;
         text-align: left;
-        // &:nth-child(1) {
-        //   width: 64px;
-        // }
+
+        img {
+          width: 64px;
+        }
       }
 
       thead {
