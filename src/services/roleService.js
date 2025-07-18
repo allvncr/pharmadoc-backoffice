@@ -9,12 +9,26 @@ export const getAllRoles = async (token) => {
   });
 };
 
-export const updateRoleByID = async (token, userData) => {
-  return await axios.patch(domain + "/roles/" + userData.id, userData, {
+export const addRole = async (token, userData) => {
+  return await axios.post(domain + "/roles", userData, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
+};
+
+export const updateRoleByID = async (token, userData) => {
+  return await axios.patch(
+    domain + "/roles/" + userData.id,
+    {
+      name: userData.name,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };
 
 export const deleteRoleByID = async (token, ID) => {

@@ -33,7 +33,7 @@
             v-else
             v-for="(item, index) in categorieStore.categories"
             :key="index"
-            @click="openEntreprise(item.id)"
+            @click="openCategorie(item)"
           >
             <td>{{ item.id }}</td>
             <td>{{ item.name }}</td>
@@ -49,45 +49,58 @@
       </div>
     </div>
 
-    <AddUserModal
+    <AddCategorieModal
       v-if="showModal"
-      @close="showModal = false"
+      :modelValue="selectedCategorie"
+      @close="closeModal"
       @submit="handleSubmit"
+      @delete="handleDelete"
     />
   </div>
 </template>
 
 <script setup>
-import AddUserModal from "@/components/AddUserModal.vue";
-import { ref, onMounted, watch } from "vue";
+import AddCategorieModal from "@/components/AddCategorieModal.vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useCategorieStore } from "@/stores/categorieStore";
 
 const router = useRouter();
-const showModal = ref(false);
 const categorieStore = useCategorieStore();
+const showModal = ref(false);
+const selectedCategorie = ref(null);
 
-const handleSubmit = (data) => {
-  // Envoi vers l’API ou ajout au tableau
-  console.log("Données soumises :", data);
+const handleSubmit = async (data) => {
+  if (selectedCategorie.value) {
+    await categorieStore.updateCategorieByID({
+      id: selectedCategorie.value.id,
+      ...data,
+    });
+  } else {
+    await categorieStore.addCategorie(data);
+  }
+
+  categorieStore.getAllCategories();
+  closeModal();
 };
 
-const openEntreprise = (id) => {
-  // Logique pour ouvrir l'entreprise
+const handleDelete = async () => {
+  if (selectedCategorie.value) {
+    await categorieStore.deleteCategorieByID(selectedCategorie.value.id);
+    categorieStore.getAllCategories();
+    closeModal();
+  }
 };
 
-const selected = ref([]);
-const selectAll = ref(false);
-
-const toggleAll = () => {
-  selected.value = selectAll.value
-    ? categorieStore.categories.map((r) => r.id)
-    : [];
+const openCategorie = (categorie) => {
+  selectedCategorie.value = { ...categorie };
+  showModal.value = true;
 };
 
-watch(selected, (val) => {
-  selectAll.value = val.length === categorieStore.categories.length;
-});
+const closeModal = () => {
+  showModal.value = false;
+  selectedCategorie.value = null;
+};
 
 onMounted(() => {
   // Logique pour charger les entreprises depuis l'API

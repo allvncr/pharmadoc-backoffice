@@ -3,35 +3,14 @@
     <div class="modal-content">
       <!-- Header -->
       <div class="modal-header">
-        <h3>Ajouter un utilisateur</h3>
+        <h3>Ajouter une categorie</h3>
         <button class="close-btn" @click="close">✖</button>
       </div>
 
       <!-- Form -->
       <form @submit.prevent="submit">
-        <label>Prénom</label>
-        <input type="text" v-model="form.firstName" required />
-
         <label>Nom</label>
-        <input type="text" v-model="form.lastName" required />
-
-        <label>Email</label>
-        <input type="text" v-model="form.email" required />
-
-        <label>Date de naissance</label>
-        <input type="date" v-model="form.birthDate" required />
-
-        <label>Verifié</label>
-        <select v-model="form.valid" required>
-          <option :value="true">Oui</option>
-          <option :value="false">Non</option>
-        </select>
-
-        <!-- <label>Role</label>
-        <select v-model="form.role" required>
-          <option value="superAdmin">Administrateur</option>
-          <option value="client">Client</option>
-        </select> -->
+        <input type="text" v-model="form.name" required />
 
         <!-- Footer -->
         <div class="modal-footer">
@@ -65,19 +44,14 @@ const props = defineProps({
 
 const emit = defineEmits(["close", "submit", "delete"]);
 
-var form = reactive({
-  firstName: "",
-  lastName: "",
-  email: "",
-  birthDate: "",
-  valid: false,
-  // role: "superAdmin",
+const form = reactive({
+  name: "",
 });
 
 watch(
   () => props.modelValue,
   (val) => {
-    if (val) form = val;
+    if (val) form.name = val.name;
   },
   { immediate: true }
 );
@@ -109,8 +83,6 @@ const handleDelete = () => {
     padding: 24px;
     width: 560px;
     max-width: 95%;
-    max-height: 90vh; // ✅ Limite la hauteur visible
-    overflow-y: auto; // ✅ Active le scroll si débordement
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
 
     .modal-header {

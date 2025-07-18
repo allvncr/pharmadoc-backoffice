@@ -21,8 +21,8 @@
             <th>Numéro de commande</th>
             <th>Client</th>
             <th>Numéro Client</th>
-            <th>Nombre d'items</th>
             <th>Prix total</th>
+            <th>Date</th>
             <th>Statut</th>
           </tr>
         </thead>
@@ -40,7 +40,7 @@
             v-else
             v-for="(item, index) in orderStore.orders"
             :key="index"
-            @click="openEntreprise(item.id)"
+            @click="openOrder(item)"
           >
             <td @click.stop>
               <input type="checkbox" v-model="selected" :value="item.id" />
@@ -48,8 +48,8 @@
             <td>{{ item.orderNumber }}</td>
             <td>{{ item.user.firstName }} {{ item.user.lastName }}</td>
             <td>{{ item.phoneNumber }}</td>
-            <td>{{ item.orderLines.length }}</td>
             <td>{{ item.totalAmount.toLocaleString("fr-CI") }} Fcfa</td>
+            <td>{{ formatDate(item.orderDate) }}</td>
             <td>
               <span :class="['status', item.status.toLowerCase()]">
                 {{ item.status }}
@@ -65,31 +65,53 @@
       </div>
     </div>
 
-    <AddUserModal
+    <OrderModal
       v-if="showModal"
-      @close="showModal = false"
+      :modelValue="selectedOrder"
+      @close="closeModal"
       @submit="handleSubmit"
     />
   </div>
 </template>
 
 <script setup>
-import AddUserModal from "@/components/AddUserModal.vue";
+import OrderModal from "@/components/OrderModal.vue";
 import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useOrderStore } from "@/stores/orderStore";
+import { format } from "date-fns";
+import frLocale from "date-fns/locale/fr";
 
 const router = useRouter();
 const showModal = ref(false);
 const orderStore = useOrderStore();
+const selectedOrder = ref(null);
 
-const handleSubmit = (data) => {
-  // Envoi vers l’API ou ajout au tableau
-  console.log("Données soumises :", data);
+const formatDate = (dateStr) => {
+  return format(new Date(dateStr), "dd MMMM yyyy, H:m", { locale: frLocale });
 };
 
-const openEntreprise = (id) => {
-  // Logique pour ouvrir l'entreprise
+const handleSubmit = async (data) => {
+  if (selectedOrder.value) {
+    await orderStore.updateOrderByID({
+      id: selectedOrder.value.id,
+      ...data,
+    });
+  }
+
+  orderStore.getAllOrders();
+  closeModal();
+};
+
+const openOrder = (order) => {
+  console.log("Selected Order:", order);
+  selectedOrder.value = { ...order };
+  showModal.value = true;
+};
+
+const closeModal = () => {
+  showModal.value = false;
+  selectedOrder.value = null;
 };
 
 const selected = ref([]);

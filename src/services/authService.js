@@ -36,15 +36,25 @@ export const getAllUsers = async (token) => {
 };
 
 export const updateUserByID = async (token, userData) => {
-  return await axios.patch(domain + "/auth/users/" + userData.id, userData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
+  return await axios.patch(
+    domain + "/users/" + userData.id,
+    {
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      email: userData.email,
+      birthDate: userData.birthDate,
+      valid: userData.valid,
     },
-  });
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };
 
 export const deleteUserByID = async (token, ID) => {
-  return await axios.delete(domain + "/auth/users/" + ID, {
+  return await axios.delete(domain + "/users/" + ID, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

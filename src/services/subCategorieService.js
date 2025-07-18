@@ -9,6 +9,14 @@ export const getAllSubCategories = async (token) => {
   });
 };
 
+export const addSubCategorie = async (token, userData) => {
+  return await axios.post(domain + "/subcategories", userData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
 export const updateSubCategorieByID = async (token, userData) => {
   return await axios.patch(domain + "/subcategories/" + userData.id, userData, {
     headers: {

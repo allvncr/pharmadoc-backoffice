@@ -3,6 +3,7 @@ import {
   getAllCategories,
   updateCategorieByID,
   deleteCategorieByID,
+  addCategorie,
 } from "@/services/categorieService";
 import { useAuthStore } from "@/stores/authStore";
 
@@ -29,6 +30,18 @@ export const useCategorieStore = defineStore("categorie", {
           err.message ||
           "Échec de la récupération des utilisateurs. Essayez à nouveau.";
         this.categories = [];
+        throw this.error;
+      }
+    },
+
+    async addCategorie(userData) {
+      try {
+        await addCategorie(authStore.token, userData);
+        this.error = null;
+      } catch (err) {
+        this.error =
+          err.response?.data?.message ||
+          "Échec lors de la création. Essayez à nouveau.";
         throw this.error;
       }
     },

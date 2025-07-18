@@ -20,6 +20,7 @@
             <th>Nom</th>
             <th>Email</th>
             <th>Role</th>
+            <th>Verifié</th>
           </tr>
         </thead>
         <tbody>
@@ -36,7 +37,7 @@
             v-else
             v-for="(user, index) in userStore.users"
             :key="index"
-            @click="openEntreprise(user.id)"
+            @click="openUser(user)"
           >
             <td>{{ user.id }}</td>
             <td>{{ user.firstName }}</td>
@@ -47,6 +48,7 @@
                 {{ role.name }}
               </div>
             </td>
+            <td>{{ user.valid }}</td>
           </tr>
         </tbody>
       </table>
@@ -59,41 +61,57 @@
 
     <AddUserModal
       v-if="showModal"
+      :modelValue="selectedUser"
       @close="showModal = false"
       @submit="handleSubmit"
+      @delete="handleDelete"
     />
   </div>
 </template>
 
 <script setup>
 import AddUserModal from "@/components/AddUserModal.vue";
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/authStore";
 
 const router = useRouter();
-const showModal = ref(false);
 const userStore = useAuthStore();
+const showModal = ref(false);
+const selectedUser = ref(null);
 
-const handleSubmit = (data) => {
-  // Envoi vers l’API ou ajout au tableau
-  console.log("Données soumises :", data);
+const handleSubmit = async (data) => {
+  if (selectedUser.value) {
+    await userStore.updateUserByID({
+      id: selectedUser.value.id,
+      ...data,
+    });
+  } else {
+    await userStore.addUser(data);
+  }
+
+  userStore.getAllUsers();
+  closeModal();
 };
 
-const openEntreprise = (id) => {
-  // Logique pour ouvrir l'entreprise
+const handleDelete = async () => {
+  if (selectedUser.value) {
+    await userStore.deleteUserByID(selectedUser.value.id);
+    userStore.getAllUsers();
+    closeModal();
+  }
 };
 
-const selected = ref([]);
-const selectAll = ref(false);
-
-const toggleAll = () => {
-  selected.value = selectAll.value ? userStore.users.map((r) => r.id) : [];
+const openUser = (user) => {
+  console.log("Ouverture de l'utilisateur :", user);
+  selectedUser.value = { ...user };
+  showModal.value = true;
 };
 
-watch(selected, (val) => {
-  selectAll.value = val.length === userStore.users.length;
-});
+const closeModal = () => {
+  showModal.value = false;
+  selectedUser.value = null;
+};
 
 onMounted(() => {
   // Logique pour charger les entreprises depuis l'API

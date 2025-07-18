@@ -17,9 +17,9 @@
       <RouterLink to="/admin/categories" active-class="active">
         Categories
       </RouterLink>
-      <RouterLink to="/admin/subCategories" active-class="active">
+      <!-- <RouterLink to="/admin/subCategories" active-class="active">
         Sous-Categories
-      </RouterLink>
+      </RouterLink> -->
       <RouterLink to="/admin/roles" active-class="active"> Roles </RouterLink>
       <RouterLink to="/admin/orders" active-class="active"> Orders </RouterLink>
     </nav>

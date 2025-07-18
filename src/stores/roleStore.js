@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import {
   getAllRoles,
+  addRole,
   updateRoleByID,
   deleteRoleByID,
 } from "@/services/roleService";
@@ -29,6 +30,18 @@ export const useRoleStore = defineStore("role", {
           err.message ||
           "Échec de la récupération des utilisateurs. Essayez à nouveau.";
         this.roles = [];
+        throw this.error;
+      }
+    },
+
+    async addRole(userData) {
+      try {
+        await addRole(authStore.token, userData);
+        this.error = null;
+      } catch (err) {
+        this.error =
+          err.response?.data?.message ||
+          "Échec lors de la création. Essayez à nouveau.";
         throw this.error;
       }
     },

@@ -31,7 +31,7 @@
             v-else
             v-for="(item, index) in roleStore.roles"
             :key="index"
-            @click="openEntreprise(item.id)"
+            @click="openRole(item)"
           >
             <td>{{ item.id }}</td>
             <td>{{ item.name }}</td>
@@ -45,44 +45,58 @@
       </div>
     </div>
 
-    <AddUserModal
+    <AddRoleModal
       v-if="showModal"
-      @close="showModal = false"
+      :modelValue="selectedRole"
+      @close="closeModal"
       @submit="handleSubmit"
+      @delete="handleDelete"
     />
   </div>
 </template>
-item
 
 <script setup>
-import AddUserModal from "@/components/AddUserModal.vue";
-import { ref, onMounted, watch } from "vue";
+import AddRoleModal from "@/components/AddRoleModal.vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useRoleStore } from "@/stores/roleStore";
 
 const router = useRouter();
-const showModal = ref(false);
 const roleStore = useRoleStore();
+const showModal = ref(false);
+const selectedRole = ref(null);
 
-const handleSubmit = (data) => {
-  // Envoi vers l’API ou ajout au tableau
-  console.log("Données soumises :", data);
+const handleSubmit = async (data) => {
+  if (selectedRole.value) {
+    await roleStore.updateRoleByID({
+      id: selectedRole.value.id,
+      ...data,
+    });
+  } else {
+    await roleStore.addRole(data);
+  }
+
+  roleStore.getAllRoles();
+  closeModal();
 };
 
-const openEntreprise = (id) => {
-  // Logique pour ouvrir l'entreprise
+const handleDelete = async () => {
+  if (selectedRole.value) {
+    await roleStore.deleteRoleByID(selectedRole.value.id);
+    roleStore.getAllRoles();
+    closeModal();
+  }
 };
 
-const selected = ref([]);
-const selectAll = ref(false);
-
-const toggleAll = () => {
-  selected.value = selectAll.value ? roleStore.roles.map((r) => r.id) : [];
+const openRole = (role) => {
+  selectedRole.value = { ...role };
+  showModal.value = true;
 };
 
-watch(selected, (val) => {
-  selectAll.value = val.length === roleStore.roles.length;
-});
+const closeModal = () => {
+  showModal.value = false;
+  selectedRole.value = null;
+};
 
 onMounted(() => {
   // Logique pour charger les entreprises depuis l'API
@@ -164,7 +178,6 @@ onMounted(() => {
         padding: 12px;
         font-size: 14px;
         text-align: left;
-
         // &:nth-child(1) {
         //   width: 64px;
         // }

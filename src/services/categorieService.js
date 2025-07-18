@@ -9,12 +9,26 @@ export const getAllCategories = async (token) => {
   });
 };
 
-export const updateCategorieByID = async (token, userData) => {
-  return await axios.patch(domain + "/categories/" + userData.id, userData, {
+export const addCategorie = async (token, userData) => {
+  return await axios.post(domain + "/categories", userData, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
+};
+
+export const updateCategorieByID = async (token, userData) => {
+  return await axios.patch(
+    domain + "/categories/" + userData.id,
+    {
+      name: userData.name,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };
 
 export const deleteCategorieByID = async (token, ID) => {

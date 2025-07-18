@@ -1,43 +1,69 @@
 <template>
   <div class="modal-backdrop" @click.self="close">
     <div class="modal-content">
-      <!-- Header -->
       <div class="modal-header">
-        <h3>Ajouter un utilisateur</h3>
+        <h3>
+          {{
+            props.modelValue
+              ? "Modifier un medicament"
+              : "Ajouter un medicament"
+          }}
+        </h3>
         <button class="close-btn" @click="close">✖</button>
       </div>
 
-      <!-- Form -->
       <form @submit.prevent="submit">
-        <label>Prénom</label>
-        <input type="text" v-model="form.firstName" required />
-
         <label>Nom</label>
-        <input type="text" v-model="form.lastName" required />
+        <input type="text" v-model="form.name" required />
 
-        <label>Email</label>
-        <input type="text" v-model="form.email" required />
+        <label>Petite description</label>
+        <textarea v-model="form.smallDescription" required></textarea>
 
-        <label>Date de naissance</label>
-        <input type="date" v-model="form.birthDate" required />
+        <label>Image (URL / Fichier)</label>
+        <input type="file" @change="handleFileUpload" />
 
-        <label>Verifié</label>
-        <select v-model="form.valid" required>
-          <option :value="true">Oui</option>
-          <option :value="false">Non</option>
+        <div v-if="form.url">
+          <img :src="form.url" alt="Image preview" class="image-preview" />
+        </div>
+
+        <label>Référence</label>
+        <input type="text" v-model="form.reference" />
+
+        <label>Quantité</label>
+        <input type="number" v-model.number="form.quantity" min="0" />
+
+        <label>Prix actuel</label>
+        <input type="number" v-model.number="form.newPrice" min="0" />
+
+        <label>Ancien prix</label>
+        <input type="number" v-model.number="form.oldPrice" min="0" />
+
+        <label>Description complète</label>
+        <textarea v-model="form.completeDescription"></textarea>
+
+        <label>Conseils d’utilisation</label>
+        <textarea v-model="form.usingAdvice"></textarea>
+
+        <label>Composition</label>
+        <textarea v-model="form.composition"></textarea>
+
+        <label>Catégorie</label>
+        <select v-model="form.idCategory">
+          <option disabled value="0">Sélectionnez une catégorie</option>
+          <option
+            v-for="cat in categorieStore.categories"
+            :key="cat.id"
+            :value="cat.id"
+          >
+            {{ cat.name }}
+          </option>
         </select>
 
-        <!-- <label>Role</label>
-        <select v-model="form.role" required>
-          <option value="superAdmin">Administrateur</option>
-          <option value="client">Client</option>
-        </select> -->
-
-        <!-- Footer -->
         <div class="modal-footer">
           <button type="button" class="btn cancel" @click="close">
             Annuler
           </button>
+
           <button
             v-if="props.modelValue"
             type="button"
@@ -58,26 +84,44 @@
 
 <script setup>
 import { reactive, watch, defineProps, defineEmits } from "vue";
+import { useCategorieStore } from "@/stores/categorieStore";
+
+const categorieStore = useCategorieStore();
 
 const props = defineProps({
-  modelValue: Object, // la catégorie à éditer (ou null si création)
+  modelValue: Object,
+  categories: {
+    type: Array,
+    default: () => [],
+  },
 });
 
 const emit = defineEmits(["close", "submit", "delete"]);
 
-var form = reactive({
-  firstName: "",
-  lastName: "",
-  email: "",
-  birthDate: "",
-  valid: false,
-  // role: "superAdmin",
+const form = reactive({
+  name: "",
+  smallDescription: "",
+  url: "", // remplacé par fileUpload
+  reference: "",
+  quantity: 0,
+  newPrice: 0,
+  oldPrice: 0,
+  completeDescription: "",
+  usingAdvice: "",
+  composition: "",
+  idCategory: 0,
+  file: null,
 });
 
 watch(
   () => props.modelValue,
   (val) => {
-    if (val) form = val;
+    if (val) {
+      Object.assign(form, {
+        ...val,
+        file: null,
+      });
+    }
   },
   { immediate: true }
 );
@@ -85,11 +129,15 @@ watch(
 const close = () => emit("close");
 
 const submit = () => {
-  emit("submit", { ...form });
+  const payload = { ...form };
+  emit("submit", payload);
 };
 
-const handleDelete = () => {
-  emit("delete");
+const handleDelete = () => emit("delete");
+
+const handleFileUpload = (e) => {
+  const file = e.target.files[0];
+  if (file) form.file = file;
 };
 </script>
 
@@ -142,6 +190,10 @@ const handleDelete = () => {
         font-size: 13px;
         font-weight: 500;
         color: #111;
+      }
+
+      .image-preview {
+        max-width: 96px;
       }
 
       input,

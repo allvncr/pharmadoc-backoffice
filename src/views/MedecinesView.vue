@@ -36,7 +36,7 @@
             v-else
             v-for="(item, index) in medecineStore.medecines"
             :key="index"
-            @click="openEntreprise(item.id)"
+            @click="openMedecine(item)"
           >
             <td>{{ item.id }}</td>
             <td>
@@ -55,49 +55,70 @@
       </div>
     </div>
 
-    <AddUserModal
+    <AddMedecineModal
       v-if="showModal"
-      @close="showModal = false"
+      :modelValue="selectedMedecine"
+      @close="closeModal"
       @submit="handleSubmit"
+      @delete="handleDelete"
     />
   </div>
 </template>
 
 <script setup>
-import AddUserModal from "@/components/AddUserModal.vue";
+import AddMedecineModal from "@/components/AddMedecineModal.vue";
 import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useMedecineStore } from "@/stores/medecineStore";
+import { useCategorieStore } from "@/stores/categorieStore";
 
 const router = useRouter();
-const showModal = ref(false);
 const medecineStore = useMedecineStore();
+const categorieStore = useCategorieStore();
+const showModal = ref(false);
+const selectedMedecine = ref(null);
 
-const handleSubmit = (data) => {
-  // Envoi vers l’API ou ajout au tableau
-  console.log("Données soumises :", data);
+const handleSubmit = async (data) => {
+  if (selectedMedecine.value) {
+    await medecineStore.updateMedecineByID({
+      id: selectedMedecine.value.id,
+      ...data,
+    });
+  } else {
+    await medecineStore.addMedecine(data);
+  }
+
+  medecineStore.all_medecines({ page: 0, size: 10 });
+  closeModal();
 };
 
-const openEntreprise = (id) => {
-  // Logique pour ouvrir l'entreprise
+const handleDelete = async () => {
+  if (selectedMedecine.value) {
+    await medecineStore.deleteMedecineByID(selectedMedecine.value.id);
+    medecineStore.all_medecines({ page: 0, size: 10 });
+    closeModal();
+  }
 };
 
-const selected = ref([]);
-const selectAll = ref(false);
-
-const toggleAll = () => {
-  selected.value = selectAll.value
-    ? medecineStore.medecines.map((r) => r.id)
-    : [];
+const openMedecine = async (item) => {
+  await medecineStore.one_medecine(item.id);
+  selectedMedecine.value = { ...medecineStore.medecine };
+  showModal.value = true;
 };
 
-watch(selected, (val) => {
-  selectAll.value = val.length === medecineStore.medecines.length;
+const closeModal = () => {
+  showModal.value = false;
+  selectedMedecine.value = null;
+};
+
+watch(showModal, (val) => {
+  document.body.classList.toggle("modal-open", val);
 });
 
 onMounted(() => {
   // Logique pour charger les entreprises depuis l'API
   medecineStore.all_medecines({ page: 0, size: 10 });
+  categorieStore.getAllCategories();
 });
 </script>
 
