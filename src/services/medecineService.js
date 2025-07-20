@@ -25,17 +25,8 @@ export const addMedecines = async (token, userData) => {
 
 export const updateMedecineByID = async (token, userData) => {
   return await axios.patch(
-    domain + "/medecine/" + userData.id,
-    {
-      name: userData.name,
-      reference: userData.reference,
-      newPrice: userData.newPrice,
-      oldPrice: userData.oldPrice,
-      smallDescription: userData.smallDescription,
-      completeDescription: userData.completeDescription,
-      composition: userData.composition,
-      usingAdvice: userData.usingAdvice,
-    },
+    domain + "/medecine/" + userData.get("id"),
+    userData,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -46,6 +37,14 @@ export const updateMedecineByID = async (token, userData) => {
 
 export const deleteMedecineByID = async (token, ID) => {
   return await axios.delete(domain + "/medecine/" + ID, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const deleteImage = async (token, ID) => {
+  return await axios.delete(domain + "/medecine/file/" + ID, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

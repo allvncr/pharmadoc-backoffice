@@ -5,6 +5,7 @@ import {
   getCategories,
   addMedecines,
   deleteMedecineByID,
+  deleteImage,
   updateMedecineByID,
 } from "@/services/medecineService";
 import Medecine from "@/models/medecine";
@@ -98,6 +99,18 @@ export const useMedecineStore = defineStore("medecine", {
     async deleteMedecineByID(ID) {
       try {
         await deleteMedecineByID(authStore.token, ID);
+        this.error = null;
+      } catch (err) {
+        this.error =
+          err.response?.data?.message ||
+          "Échec de la mise à jour des informations utilisateur. Essayez à nouveau.";
+        throw this.error;
+      }
+    },
+
+    async deleteImage(ID) {
+      try {
+        await deleteImage(authStore.token, ID);
         this.error = null;
       } catch (err) {
         this.error =

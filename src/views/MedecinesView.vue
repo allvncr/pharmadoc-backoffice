@@ -80,10 +80,9 @@ const selectedMedecine = ref(null);
 
 const handleSubmit = async (data) => {
   if (selectedMedecine.value) {
-    await medecineStore.updateMedecineByID({
-      id: selectedMedecine.value.id,
-      ...data,
-    });
+    data.append("id", selectedMedecine.value.id);
+    data.delete("quantity");
+    await medecineStore.updateMedecineByID(data);
   } else {
     await medecineStore.addMedecine(data);
   }
@@ -102,7 +101,10 @@ const handleDelete = async () => {
 
 const openMedecine = async (item) => {
   await medecineStore.one_medecine(item.id);
-  selectedMedecine.value = { ...medecineStore.medecine };
+  selectedMedecine.value = {
+    ...medecineStore.medecine,
+    idCategory: medecineStore.medecine.categoryDTO?.id,
+  };
   showModal.value = true;
 };
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="modal-backdrop" @click.self="close">
+  <div class="modal-backdrop">
     <div class="modal-content">
       <div class="modal-header">
         <h3>
@@ -24,6 +24,9 @@
 
         <div v-if="form.url">
           <img :src="form.url" alt="Image preview" class="image-preview" />
+          <button type="button" class="close-btn" @click="deleteImage">
+            ✖
+          </button>
         </div>
 
         <label>Référence</label>
@@ -85,8 +88,10 @@
 <script setup>
 import { reactive, watch, defineProps, defineEmits } from "vue";
 import { useCategorieStore } from "@/stores/categorieStore";
+import { useMedecineStore } from "@/stores/medecineStore";
 
 const categorieStore = useCategorieStore();
+const medecineStore = useMedecineStore();
 
 const props = defineProps({
   modelValue: Object,
@@ -99,6 +104,7 @@ const props = defineProps({
 const emit = defineEmits(["close", "submit", "delete"]);
 
 const form = reactive({
+  id: null,
   name: "",
   smallDescription: "",
   url: "", // remplacé par fileUpload
@@ -112,6 +118,10 @@ const form = reactive({
   idCategory: 0,
   file: null,
 });
+
+const deleteImage = () => {
+  medecineStore.deleteImage(form.id);
+};
 
 watch(
   () => props.modelValue,
@@ -129,8 +139,22 @@ watch(
 const close = () => emit("close");
 
 const submit = () => {
-  const payload = { ...form };
-  emit("submit", payload);
+  const formData = new FormData();
+  formData.append("name", form.name);
+  formData.append("smallDescription", form.smallDescription);
+  formData.append("reference", form.reference);
+  formData.append("quantity", form.quantity);
+  formData.append("newPrice", form.newPrice);
+  formData.append("oldPrice", form.oldPrice);
+  formData.append("completeDescription", form.completeDescription);
+  formData.append("usingAdvice", form.usingAdvice);
+  formData.append("composition", form.composition);
+  formData.append("idCategory", form.idCategory);
+  if (form.file) {
+    formData.append("file", form.file);
+  }
+
+  emit("submit", formData);
 };
 
 const handleDelete = () => emit("delete");
@@ -190,6 +214,21 @@ const handleFileUpload = (e) => {
         font-size: 13px;
         font-weight: 500;
         color: #111;
+      }
+
+      div {
+        position: relative;
+
+        & .close-btn {
+          position: absolute;
+          top: 0px;
+          left: 96px;
+          background: none;
+          border: none;
+          font-size: 24px;
+          cursor: pointer;
+          color: #e74c3c;
+        }
       }
 
       .image-preview {

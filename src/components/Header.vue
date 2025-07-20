@@ -4,7 +4,9 @@
 
     <div class="header-right">
       <div class="user-menu" @click="toggleDropdown">
-        <!-- <div class="avatar">{{ authStore.user.lastName[0] }}</div> -->
+        <div class="avatar" v-if="authStore.user.lastName">
+          {{ authStore.user.lastName[0] }}
+        </div>
         <div class="info">
           <strong>{{ authStore.user.firstName }}</strong>
           <small>{{ authStore.user.roles[0].name }}</small>

@@ -62,7 +62,7 @@
     <AddUserModal
       v-if="showModal"
       :modelValue="selectedUser"
-      @close="showModal = false"
+      @close="closeModal"
       @submit="handleSubmit"
       @delete="handleDelete"
     />
@@ -87,7 +87,7 @@ const handleSubmit = async (data) => {
       ...data,
     });
   } else {
-    await userStore.addUser(data);
+    await userStore.register(data);
   }
 
   userStore.getAllUsers();
@@ -103,8 +103,10 @@ const handleDelete = async () => {
 };
 
 const openUser = (user) => {
-  console.log("Ouverture de l'utilisateur :", user);
-  selectedUser.value = { ...user };
+  selectedUser.value = {
+    ...user,
+    roles: user.roles.map((role) => role.name), // Convert roles to array of values
+  };
   showModal.value = true;
 };
 

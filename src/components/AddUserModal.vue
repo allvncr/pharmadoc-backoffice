@@ -10,16 +10,24 @@
       <!-- Form -->
       <form @submit.prevent="submit">
         <label>Prénom</label>
-        <input type="text" v-model="form.firstName" required />
+        <input type="text" v-model="form.firstName" />
 
         <label>Nom</label>
-        <input type="text" v-model="form.lastName" required />
+        <input type="text" v-model="form.lastName" />
 
         <label>Email</label>
         <input type="text" v-model="form.email" required />
 
+        <label v-if="!props.modelValue">Password</label>
+        <input
+          v-if="!props.modelValue"
+          type="password"
+          v-model="form.password"
+          required
+        />
+
         <label>Date de naissance</label>
-        <input type="date" v-model="form.birthDate" required />
+        <input type="date" v-model="form.birthDate" />
 
         <label>Verifié</label>
         <select v-model="form.valid" required>
@@ -27,11 +35,12 @@
           <option :value="false">Non</option>
         </select>
 
-        <!-- <label>Role</label>
-        <select v-model="form.role" required>
-          <option value="superAdmin">Administrateur</option>
-          <option value="client">Client</option>
-        </select> -->
+        <label>Role</label>
+        <select v-model="form.roles" required multiple>
+          <option v-for="role in roles" :key="role.value" :value="role.value">
+            {{ role.name }}
+          </option>
+        </select>
 
         <!-- Footer -->
         <div class="modal-footer">
@@ -71,8 +80,13 @@ var form = reactive({
   email: "",
   birthDate: "",
   valid: false,
-  // role: "superAdmin",
+  roles: ["ROLE_ADMIN"],
 });
+
+const roles = [
+  { value: "ROLE_ADMIN", name: "Administrateur" },
+  { value: "ROLE_USER", name: "Client" },
+];
 
 watch(
   () => props.modelValue,
