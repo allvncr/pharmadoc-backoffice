@@ -84,9 +84,9 @@ export const useMedecineStore = defineStore("medecine", {
       }
     },
 
-    async updateMedecineByID(userData) {
+    async updateMedecineByID(id, userData) {
       try {
-        await updateMedecineByID(authStore.token, userData);
+        await updateMedecineByID(authStore.token, id, userData);
         this.error = null;
       } catch (err) {
         this.error =

@@ -32,8 +32,8 @@
         <label>Référence</label>
         <input type="text" v-model="form.reference" />
 
-        <label>Quantité</label>
-        <input type="number" v-model.number="form.quantity" min="0" />
+        <!-- <label>Quantité</label>
+        <input type="number" v-model.number="form.quantity" min="0" /> -->
 
         <label>Prix actuel</label>
         <input type="number" v-model.number="form.newPrice" min="0" />
@@ -120,7 +120,15 @@ const form = reactive({
 });
 
 const deleteImage = () => {
-  medecineStore.deleteImage(form.id);
+  medecineStore
+    .deleteImage(form.id)
+    .then(() => {
+      form.url = "";
+      form.file = null;
+    })
+    .catch((err) => {
+      console.error("Erreur lors de la suppression de l'image :", err);
+    });
 };
 
 watch(
@@ -144,8 +152,8 @@ const submit = () => {
   formData.append("smallDescription", form.smallDescription);
   formData.append("reference", form.reference);
   formData.append("quantity", form.quantity);
-  formData.append("newPrice", form.newPrice);
-  formData.append("oldPrice", form.oldPrice);
+  // formData.append("newPrice", form.newPrice);
+  // formData.append("oldPrice", form.oldPrice);
   formData.append("completeDescription", form.completeDescription);
   formData.append("usingAdvice", form.usingAdvice);
   formData.append("composition", form.composition);

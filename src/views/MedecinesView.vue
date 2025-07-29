@@ -80,9 +80,8 @@ const selectedMedecine = ref(null);
 
 const handleSubmit = async (data) => {
   if (selectedMedecine.value) {
-    data.append("id", selectedMedecine.value.id);
     data.delete("quantity");
-    await medecineStore.updateMedecineByID(data);
+    await medecineStore.updateMedecineByID(selectedMedecine.value.id, data);
   } else {
     await medecineStore.addMedecine(data);
   }

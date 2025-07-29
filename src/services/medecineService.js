@@ -23,20 +23,16 @@ export const addMedecines = async (token, userData) => {
   });
 };
 
-export const updateMedecineByID = async (token, userData) => {
-  return await axios.patch(
-    domain + "/medecine/" + userData.get("id"),
-    userData,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+export const updateMedecineByID = async (token, id, userData) => {
+  return await axios.patch(domain + "/medicine/" + id, userData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
 
 export const deleteMedecineByID = async (token, ID) => {
-  return await axios.delete(domain + "/medecine/" + ID, {
+  return await axios.delete(domain + "/medicine/" + ID, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -44,7 +40,7 @@ export const deleteMedecineByID = async (token, ID) => {
 };
 
 export const deleteImage = async (token, ID) => {
-  return await axios.delete(domain + "/medecine/file/" + ID, {
+  return await axios.delete(domain + "/medicine/file/" + ID, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
