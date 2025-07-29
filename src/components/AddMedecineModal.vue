@@ -152,8 +152,8 @@ const submit = () => {
   formData.append("smallDescription", form.smallDescription);
   formData.append("reference", form.reference);
   formData.append("quantity", form.quantity);
-  // formData.append("newPrice", form.newPrice);
-  // formData.append("oldPrice", form.oldPrice);
+  formData.append("newPrice", form.newPrice);
+  formData.append("oldPrice", form.oldPrice);
   formData.append("completeDescription", form.completeDescription);
   formData.append("usingAdvice", form.usingAdvice);
   formData.append("composition", form.composition);
