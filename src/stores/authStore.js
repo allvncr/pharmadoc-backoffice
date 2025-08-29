@@ -6,6 +6,7 @@ import {
   deleteUserByID,
   getAllUsers,
   updateUserByID,
+  getUserById,
 } from "@/services/authService";
 
 export const useAuthStore = defineStore("auth", {
@@ -54,6 +55,22 @@ export const useAuthStore = defineStore("auth", {
           err.response?.data?.message ||
           "Échec de l’inscription. Essayez à nouveau.";
         throw this.error;
+      }
+    },
+
+    async one_user(id) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const { data } = await getUserById(this.token, id);
+        this.user = data;
+        localStorage.setItem("user", JSON.stringify(this.user));
+      } catch (err) {
+        this.error =
+          err.response?.data?.message ||
+          "Erreur lors de la récupération du médicament.";
+      } finally {
+        this.loading = false;
       }
     },
 

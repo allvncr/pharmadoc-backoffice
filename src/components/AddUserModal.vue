@@ -18,6 +18,13 @@
         <label>Email</label>
         <input type="text" v-model="form.email" required />
 
+        <label>Role</label>
+        <select v-model="form.roles" required multiple>
+          <option v-for="role in roles" :key="role.value" :value="role.value">
+            {{ role.name }}
+          </option>
+        </select>
+
         <label v-if="!props.modelValue">Password</label>
         <input
           v-if="!props.modelValue"
@@ -35,12 +42,26 @@
           <option :value="false">Non</option>
         </select>
 
-        <label>Role</label>
-        <select v-model="form.roles" required multiple>
-          <option v-for="role in roles" :key="role.value" :value="role.value">
-            {{ role.name }}
-          </option>
-        </select>
+        <!-- Affichage des images si urls existe et contient des éléments -->
+        <div
+          v-if="
+            props.modelValue &&
+            props.modelValue.urls &&
+            props.modelValue.urls.length
+          "
+          class="user-images"
+        >
+          <label>Images</label>
+          <div class="images-grid">
+            <div
+              v-for="(url, idx) in props.modelValue.urls"
+              :key="url"
+              class="image-wrapper"
+            >
+              <img :src="url" alt="Image utilisateur" />
+            </div>
+          </div>
+        </div>
 
         <!-- Footer -->
         <div class="modal-footer">
@@ -121,7 +142,7 @@ const handleDelete = () => {
     background: #fff;
     border-radius: 8px;
     padding: 24px;
-    width: 560px;
+    width: 720px;
     max-width: 95%;
     max-height: 90vh; // ✅ Limite la hauteur visible
     overflow-y: auto; // ✅ Active le scroll si débordement
@@ -170,6 +191,39 @@ const handleDelete = () => {
         &:focus {
           outline: none;
           border-color: #ddd;
+        }
+      }
+
+      // ...existing code...
+      .user-images {
+        margin-top: 8px;
+
+        label {
+          display: block;
+          margin-bottom: 6px;
+          font-weight: 500;
+        }
+
+        .images-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
+
+          .image-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #fafafa;
+            border-radius: 6px;
+            padding: 6px;
+            border: 1px solid #eee;
+
+            img {
+              width: 100%;
+              border-radius: 4px;
+              object-fit: contain;
+            }
+          }
         }
       }
 

@@ -35,6 +35,14 @@ export const getAllUsers = async (token) => {
   });
 };
 
+export const getUserById = async (token, ID) => {
+  return await axios.get(domain + "/users/" + ID, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
 export const updateUserByID = async (token, userData) => {
   return await axios.patch(
     domain + "/users/" + userData.id,

@@ -102,10 +102,12 @@ const handleDelete = async () => {
   }
 };
 
-const openUser = (user) => {
+const openUser = async (user) => {
+  await userStore.one_user(user.id);
+  // On récupère l'utilisateur à jour depuis userStore.user
   selectedUser.value = {
-    ...user,
-    roles: user.roles.map((role) => role.name), // Convert roles to array of values
+    ...userStore.user,
+    roles: userStore.user.roles.map((role) => role.name),
   };
   showModal.value = true;
 };
